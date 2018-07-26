@@ -14,9 +14,9 @@
   command: "tar -xf /tmp/lo_{{ libre_office_version }}.tar.gz -C /tmp"
 
 - name: Run our installer
-  command: ./tmp/LibreOffice_6.0.5.2_Linux_x86-64_rpm/install ./alfresco/libreoffice
-  run_as: alfresco
+  command: bash /tmp/LibreOffice_6.0.5.2_Linux_x86-64_rpm/install /tmp/LibreOffice_6.0.5.2_Linux_x86-64_rpm /alfresco/libreoffice
+  become: true
+  become_user: alfresco
 
 - name: Move our binary as lo munges paths a bit
-  command: mv /alfresco/libreoffice/opt/libreoffice6.0/* /alfresco/libreoffice/
-
+  shell: mv /alfresco/libreoffice/opt/libreoffice6.0/* /alfresco/libreoffice/

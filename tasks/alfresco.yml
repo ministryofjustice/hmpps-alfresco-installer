@@ -15,7 +15,7 @@
     - /alfresco/tomcat/shared/classes/alfresco/extension/license
 
 - name: Get our alfresco installation binary and license
-  s3:
+  aws_s3:
     bucket: "{{ artifact_bucket }}"
     object: "/alfresco/{{ item }}"
     dest: "/tmp/{{ item }}"
@@ -25,11 +25,12 @@
     - alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic
 
 - name: Install our alfresco binary
-  command: "JAVA_HOME=/usr/java/latest \
-            ./tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
+  command: "JAVA_HOME=/usr/bin/java \
+             /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
             --prefix /alfresco \
             --alfresco_admin_password {{ alfreso_admin_password|default('admin') }} \
-             --disable-components postgres"
+            --disable-components postgres \
+            --installer-language en"
 
 - name: Move our license to the correct directory
   command: "mv alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic \

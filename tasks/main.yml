@@ -6,22 +6,22 @@
     name: alfresco_vars
 
 - name: Install required packages
-  include_task: packages.yml
+  include: packages.yml
 
 - name: Install gosu
-  include_task: gosu.yml
+  include: gosu.yml
 
 - name: Create our application users
-  include_task: users.yml
+  include: users.yml
   with_items: "{{ users| default([]) }}"
   loop_control:
     loop_var: app_user
 
 - name: Install libre-office
-  include_task: libre-office.yml
+  include: libre-office.yml
 
 - name: Install alfresco
-  include_task: alfresco.yml
+  include: alfresco.yml
 
 - name: Clean up /tmp
   command: rm -rf /tmp/*
