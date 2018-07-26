@@ -1,0 +1,16 @@
+---
+
+- name: Load in our vars
+  include_vars:
+    file: main.yml
+    name: alfresco_vars
+
+- name: Install required packages
+  include_task: packages.yml
+
+- name: Create our application users
+  include_task: users.yml
+  with_items: "{{ users| default([]) }}"
+  loop_control:
+    - loop_var: app_user
+
