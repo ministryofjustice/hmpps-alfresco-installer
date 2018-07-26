@@ -8,6 +8,9 @@
 - name: Install required packages
   include_task: packages.yml
 
+- name: Install gosu
+  include_task: gosu.yml
+
 - name: Create our application users
   include_task: users.yml
   with_items: "{{ users| default([]) }}"

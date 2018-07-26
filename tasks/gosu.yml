@@ -16,3 +16,6 @@
     attributes: "+x"
   with_items:
     - "gosu-{{ arch_version.stdout }}"
+
+- name: Test our gosu installation works
+  cmd: gosu nobody true
