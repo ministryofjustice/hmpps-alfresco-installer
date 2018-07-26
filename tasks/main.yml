@@ -17,3 +17,6 @@
   loop_control:
     - loop_var: app_user
 
+- name: Install libre-office
+  include_task: libre-office.yml
+

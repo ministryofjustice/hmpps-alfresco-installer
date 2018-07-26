@@ -1,0 +1,21 @@
+---
+
+- name: Set open office facts
+  set_fact:
+    libre_office_version: "{{ libre_office.version|default('6.0.5') }}"
+    libre_office_url:  "http://download.documentfoundation.org/libreoffice/stable/${LO_VERSION}/rpm/x86_64/LibreOffice_{{ libre_office.version|default('6.0.5') }}_Linux_x86-64_rpm.tar.gz"
+
+- name: Download and unarchive libre-office
+  unarchive:
+    src: "{{ libre_office_url }}"
+    dest: "/tmp/lo_{{ libre_office_version }}"
+
+- name: Run our installer
+  command: ./install ./alfresco/libreoffice
+  run_as: alfresco
+
+- name: Move our binary as lo munges paths a bit
+  command: mv /alfresco/libreoffice/opt/libreoffice6.0/* /alfresco/libreoffice/
+
+- name: Clean up /tmp
+  command: rm -rf /tmp/*
