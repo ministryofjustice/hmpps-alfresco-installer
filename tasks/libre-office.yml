@@ -17,5 +17,3 @@
 - name: Move our binary as lo munges paths a bit
   command: mv /alfresco/libreoffice/opt/libreoffice6.0/* /alfresco/libreoffice/
 
-- name: Clean up /tmp
-  command: rm -rf /tmp/*

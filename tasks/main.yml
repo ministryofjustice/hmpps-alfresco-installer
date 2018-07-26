@@ -20,3 +20,8 @@
 - name: Install libre-office
   include_task: libre-office.yml
 
+- name: Install alfresco
+  include_task: alfresco.yml
+
+- name: Clean up /tmp
+  command: rm -rf /tmp/*
