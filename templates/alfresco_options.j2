@@ -1,0 +1,11 @@
+mode=unattended
+enable-components=javaalfresco,alfrescowcmqs,libreofficecomponent
+disable-components=postgres
+
+# Install location
+prefix=/alfresco
+
+alfresco_admin_password={{ alfresco_admin_password|default('admin') }}
+
+# Don't install init scripts
+baseunixservice_install_as_service=0

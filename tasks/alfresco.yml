@@ -24,12 +24,18 @@
     - alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin
     - alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic
 
+- name: Make our alfresco binary executable
+  command: "chmod +x alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
+
+- name: Copy our installer template to the server
+  template:
+    src: "{{ lookup('template', 'alfresco_options.j2') }}"
+    dest: /tmp/alfresco
+
 - name: Install our alfresco binary
-  command: "JAVA_HOME=/usr/bin/java \
+  raw: "JAVA_HOME=/usr/bin/java \
              /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
-            --prefix /alfresco \
-            --alfresco_admin_password {{ alfreso_admin_password|default('admin') }} \
-            --disable-components postgres \
+            --optionfile /tmp/alfresco \
             --installer-language en"
 
 - name: Move our license to the correct directory
