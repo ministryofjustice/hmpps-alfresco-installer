@@ -22,3 +22,9 @@ packages:
   - vim
   - curl
   - wget
+
+users:
+ - group_name: alfresco
+   gid: 1500
+   uid: 1500
+   user_name: alfresco
