@@ -14,6 +14,17 @@
     - /srv/cache
     - /alfresco/tomcat/shared/classes/alfresco/extension/license
 
+- name: Ensure our path has correct attributes
+  file:
+    path: "{{ item }}"
+    recurse: true
+    owner: alfresco
+    mode: 0775
+  with_items:
+    - /alfresco
+    - /srv/content
+    - /srv/cache
+
 - name: Get our alfresco installation binary and license
   aws_s3:
     bucket: "{{ artifact_bucket }}"
@@ -25,27 +36,38 @@
     - alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic
 
 - name: Make our alfresco binary executable
-  command: "chmod +x alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
+  command: "chmod +x /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
 
 - name: Copy our installer template to the server
-  template:
-    src: "{{ lookup('template', 'alfresco_options.j2') }}"
-    dest: /tmp/alfresco
+  copy:
+    src: "{{ role_path }}/files/alfresco.properties"
+    dest: /tmp/alfresco.properties
+    remote_src: true
+
+- name: Set our admin password
+  lineinfile:
+    path: /tmp/alfresco.properties
+    regexp: "^ALF_PASSWORD"
+    line: "alfresco_admin_password={{ alfresco_admin_password|default('admin') }}"
 
 - name: Install our alfresco binary
   raw: "JAVA_HOME=/usr/bin/java \
              /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
-            --optionfile /tmp/alfresco \
+            --optionfile /tmp/alfresco.properties \
             --installer-language en"
 
 - name: Move our license to the correct directory
-  command: "mv alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic \
-            /alfresco/tomcat/shared/classes/alfresco/extension/license/."
+  copy:
+    src: "/tmp/alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
+    dest: /alfresco/tomcat/shared/classes/alfresco/extension/license/
+    remote_src: true
 
-- name: Ensure our path has correct attributes
+- name: Clean up
   file:
-    path: /alfresco
-    recurse: true
-    owner: alfresco
-    mode: 0775
+    state: absent
+    path: "/tmp/{{ item }}"
+  with_items:
+    - "alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
+    - "alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
+    - "alfresco.properties"
 

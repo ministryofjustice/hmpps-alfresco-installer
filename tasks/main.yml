@@ -22,6 +22,3 @@
 
 - name: Install alfresco
   include: alfresco.yml
-
-- name: Clean up /tmp
-  command: rm -rf /tmp/*
