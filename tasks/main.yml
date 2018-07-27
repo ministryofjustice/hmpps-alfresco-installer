@@ -1,0 +1,24 @@
+---
+
+- name: Load in our vars
+  include_vars:
+    file: main.yml
+    name: alfresco_vars
+
+- name: Install required packages
+  include: packages.yml
+
+- name: Install gosu
+  include: gosu.yml
+
+- name: Create our application users
+  include: users.yml
+  with_items: "{{ users| default([]) }}"
+  loop_control:
+    loop_var: app_user
+
+- name: Install libre-office
+  include: libre-office.yml
+
+- name: Install alfresco
+  include: alfresco.yml

@@ -1,0 +1,30 @@
+---
+# vars file for hmpps-alfresco-packer
+
+packages:
+  - deltarpm 
+  - dpkg
+  - cairo
+  - cups-libs
+  - fontconfig
+  - java-1.8.0-openjdk
+  - libICE
+  - libSM
+  - libXext
+  - libXinerama
+  - libXrender
+  - mesa-libGLU
+  - patch
+  - rsync
+  - rsyslog
+  - wget
+  - ImageMagick
+  - vim
+  - curl
+  - wget
+
+users:
+ - group_name: alfresco
+   gid: 1500
+   uid: 1500
+   user_name: alfresco

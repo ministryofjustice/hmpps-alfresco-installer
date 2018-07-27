@@ -1,0 +1,14 @@
+---
+
+- name: Create our application group
+  group:
+    name:   "{{ app_user.group_name|default('alfresco') }}"
+    gid:    "{{ app_user.gid|default(1000) }}"
+
+- name: Create our application user
+  user:
+    name:   "{{ app_user.username|default('alfresco') }}"
+    groups: "{{ app_user.group_name|default('alfresco') }}"
+    uid:    "{{ app_user.uid|default(1000) }}"
+    system: "{{ app_user.sys_user|default(true) }}"
+    home:   "{{ app_user.home|default('/alfresco') }}"

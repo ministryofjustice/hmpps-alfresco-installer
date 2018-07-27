@@ -1,0 +1,17 @@
+---
+
+- name: Install/upgrade the epel repo from remote
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
+
+- name: Update our system
+  yum:
+    name: '*'
+    state: latest
+
+- name: Install required packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ alfresco_vars.packages }}"
