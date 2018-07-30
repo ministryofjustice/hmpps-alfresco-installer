@@ -34,6 +34,7 @@
   with_items:
     - alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin
     - alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic
+    - alfresco-global.properties
 
 - name: Make our alfresco binary executable
   command: "chmod +x /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
@@ -63,6 +64,17 @@
     dest: /alfresco/tomcat/shared/classes/alfresco/extension/license/
     remote_src: true
 
+- name: Move our configfile to the correct directory
+  copy:
+    src: "/tmp/alfresco-global.properties"
+    dest: /alfresco/tomcat/shared/classes/alfresco-global.properties
+    remote_src: true
+
+- name: Ensure that alfresco has stopped
+  service:
+    name: alfresco
+    state: stopped
+
 - name: Clean up
   file:
     state: absent
@@ -71,4 +83,16 @@
     - "alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
     - "alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
     - "alfresco.properties"
+    - "alfresco-global.properties"
 
+- name: Modify the startupscript so we can run as a non priveleged user
+  lineinfile:
+    path: /etc/rc.d/init.d/alfresco
+    regexp: "/alfresco/alfresco.sh start \"$2\""
+    line: "su - alfresco -c \"/opt/Alfresco/alfresco.sh start $2\""
+
+- name: Modify the startupscript so we can stop as a non priveleged user
+  lineinfile:
+    path: /etc/rc.d/init.d/alfresco
+    regexp: "/alfresco/alfresco.sh stop \"$2\""
+    line: "su - alfresco -c \"/opt/Alfresco/alfresco.sh stop $2\""
