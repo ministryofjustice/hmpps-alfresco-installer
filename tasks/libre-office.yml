@@ -12,7 +12,8 @@
 
 - name: Uncompress our installer
   command: "tar -xf /tmp/lo_{{ libre_office_version }}.tar.gz -C /tmp"
-
+  warn: false
+  
 - name: Run our installer
   command: "bash /tmp/LibreOffice_6.0.5.2_Linux_x86-64_rpm/install /tmp/LibreOffice_{{ libre_office_version }}.2_Linux_x86-64_rpm /alfresco/libreoffice"
   become: true
@@ -25,7 +26,6 @@
   file:
     state: absent
     path: "/tmp/{{ item }}"
-    recurse: true
   with_items:
     - "lo_{{ libre_office_version }}.tar.gz"
     - "/tmp/LibreOffice_{{ libre_office_version }}.2_Linux_x86-64_rpm/"
