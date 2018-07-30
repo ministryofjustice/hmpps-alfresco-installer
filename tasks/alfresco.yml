@@ -37,6 +37,7 @@
 
 - name: Make our alfresco binary executable
   command: "chmod +x /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
+  warn: false
 
 - name: Copy our installer template to the server
   copy:
