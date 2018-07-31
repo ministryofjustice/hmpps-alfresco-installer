@@ -13,6 +13,7 @@ packages:
   - libXext
   - libXinerama
   - libXrender
+  - libGLU
   - mesa-libGLU
   - patch
   - rsync
@@ -22,6 +23,8 @@ packages:
   - vim
   - curl
   - wget
+  - swftools
+  - ghostscript
 
 users:
  - group_name: alfresco
