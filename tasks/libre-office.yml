@@ -2,25 +2,31 @@
 
 - name: Set open office facts
   set_fact:
-    libre_office_version: "{{ libre_office_version|default('6.0.5') }}"
-    libre_office_url:  "http://download.documentfoundation.org/libreoffice/stable/{{ libre_office_version|default('6.0.5') }}/rpm/x86_64/LibreOffice_{{ libre_office_version|default('6.0.5') }}_Linux_x86-64_rpm.tar.gz"
+    libre_office_version: "{{ libre_office_version|default('5.2.1.2') }}"
+    libre_office_url:  "http://download.documentfoundation.org/libreoffice/old/{{ libre_office_version|default('5.2.1.2') }}/rpm/x86_64/LibreOffice_{{ libre_office_version|default('5.2.1.2') }}_Linux_x86-64_rpm.tar.gz"
 
 - name: Download libre-office
   get_url:
     url: "{{ libre_office_url }}"
-    dest: "/tmp/lo_{{ libre_office_version }}.tar.gz"
+    dest: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}.tar.gz"
 
 - name: Uncompress our installer
-  command: "tar -xf /tmp/lo_{{ libre_office_version }}.tar.gz -C /tmp"
-  warn: false
-  
-- name: Run our installer
-  command: "bash /tmp/LibreOffice_6.0.5.2_Linux_x86-64_rpm/install /tmp/LibreOffice_{{ libre_office_version }}.2_Linux_x86-64_rpm /alfresco/libreoffice"
-  become: true
-  become_user: alfresco
+  unarchive:
+    src: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}.tar.gz"
+    remote_src: true
+    dest: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}"
 
-- name: Move our binary as lo munges paths a bit
-  shell: mv /alfresco/libreoffice/opt/libreoffice6.0/* /alfresco/libreoffice/
+- name: Get all of our libreoffice rpms
+  find:
+    paths: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}/RPMS"
+    patterns: "*.rpm/"
+  register: rpm_result
+
+- name: Install libreoffice
+  yum:
+    name: "{{ item.path }}"
+    state: present
+  with_items: "{{ rpm_result.files }}"
 
 - name: Cleanup
   file:
@@ -28,4 +34,4 @@
     path: "/tmp/{{ item }}"
   with_items:
     - "lo_{{ libre_office_version }}.tar.gz"
-    - "/tmp/LibreOffice_{{ libre_office_version }}.2_Linux_x86-64_rpm/"
+    - "lo_{{ libre_office_version }}"
