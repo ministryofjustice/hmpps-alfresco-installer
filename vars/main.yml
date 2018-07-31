@@ -7,7 +7,8 @@ packages:
   - cairo
   - cups-libs
   - fontconfig
-  - java-1.8.0-openjdk
+  - tomcat7-7.0.59
+  - jdk-8u65-linux-x64
   - libICE
   - libSM
   - libXext
