@@ -1,57 +1,79 @@
 ---
 
+- name: Set directory locations
+  set_fact:
+    alfresco_libs: /usr/share/tomcat/shared/lib
+    alfresco_licence: /usr/share/tomcat/shared/classes/alfresco/extension/license
+    alfresco_content: /srv/content
+    alfresco_cache: /srv/cache
+    alfresco_data: /srv/alf_data
+    tomcat_shared: /usr/share/tomcat/shared/
+
 - name: Create required directories for alfresco
   file:
     state: directory
     path: "{{ item }}"
-    owner: alfresco
-    group: alfresco
   with_items:
-    - /alfresco/tomcat/shared/classes/alfresco/extension/subsystems/Authentication/ldap/ldap1/
-    - /alfresco/tomcat/shared/classes/alfresco/extension/subsystems/Authentication/ldap-ad/ldap1/
-    - /alfresco/tomcat/webapps/ROOT
-    - /srv/content
-    - /srv/cache
-    - /alfresco/tomcat/shared/classes/alfresco/extension/license
+    - "{{ alfresco_libs }}"
+    - "{{ alfresco_license }}"
+    - "{{ alfresco_content }}"
+    - "{{ alfresco_cache }}"
+    - "{{ alfresco_data }}"
 
-- name: Ensure our path has correct attributes
+- name: Set permissions on cache and content and data dirs
   file:
-    path: "{{ item }}"
+    dest: "{{ item }}"
+    owner: tomcat
+    group: tomcat
     recurse: true
-    owner: alfresco
-    mode: 0775
   with_items:
-    - /alfresco
-    - /srv/content
-    - /srv/cache
+    - "{{ alfresco_content }}"
+    - "{{ alfresco_cache }}"
+    - "{{ alfresco_data }}"
 
-- name: Get our alfresco installation binary and license
+- name: Get our alfresco zips, amps and license
   aws_s3:
     bucket: "{{ artifact_bucket }}"
     object: "/alfresco/{{ item }}"
     dest: "/tmp/{{ item }}"
     mode: get
   with_items:
-    - alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin
-    - alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic
-    - alfresco-global.properties
+    - alfresco-content-services-platform-distributionzip-5.2.3.zip
+    - alfresco-content-services-share-distribution-5.2.3.zip
+    - alfresco-ent-5.2-NOMS.lic
+    - alfresco-s3-connector-2.1.0.amp
 
-- name: Make our alfresco binary executable
-  command: "chmod +x /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
-  warn: false
-
-- name: Copy our installer template to the server
-  copy:
-    src: "{{ role_path }}/files/alfresco.properties"
-    dest: /tmp/alfresco.properties
+- name: Uncompress our installers
+  unarchive:
+    src: "/tmp/{{ item }}"
+    dest: "/tmp"
     remote_src: true
+  with_items:
+    - alfresco-content-services-platform-distributionzip-5.2.3.zip
+    - alfresco-content-services-share-distribution-5.2.3.zip
 
-- name: Set our admin password
-  lineinfile:
-    path: /tmp/alfresco.properties
-    regexp: "^ALF_PASSWORD"
-    line: "alfresco_admin_password={{ alfresco_admin_password|default('admin') }}"
+- name: Copy folders to the correct location
+  copy:
+    src: "/tmp/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    remote_src: true
+  with_items:
+    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/alf_data", dest: "/srv" }
+    - { src: "alfresco-content-services-share-distributionzip-5.2.3/alf_data", dest: "/srv" }
+    - { src: "alfresco-content-services-share-distributionzip-5.2.3/bin", dest: "/srv" }
+    - { src: "alfresco-content-services-share-distributionzip-5.2.3/bin", dest: "/srv" }
 
+- name: Copy our files to the correct locations
+  copy:
+    src: "/tmp/{{ item.src }}/{{ item.file }}"
+    dest: "{{ item.dest }}/{{ item.file }}"
+    remote_src: true
+  with_items:
+   - {
+        file: "postgresql-9.4.1212.jar",
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/lib",
+        dest: "{{ alfresco_libs }}"
+    }
 - name: Install our alfresco binary
   raw: "JAVA_HOME=/usr/bin/java \
              /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
