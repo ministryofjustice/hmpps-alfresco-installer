@@ -7,8 +7,7 @@ packages:
   - cairo
   - cups-libs
   - fontconfig
-  - tomcat7-7.0.59
-  - jdk-8u65-linux-x64
+  - tomcat
   - libICE
   - libSM
   - libXext
@@ -25,6 +24,7 @@ packages:
   - curl
   - wget
   - ghostscript
+  - unzip
 
 users:
  - group_name: alfresco

@@ -1,32 +1,21 @@
 ---
 
-- name: Set open office facts
+- name: Set libreoffice facts
   set_fact:
     libre_office_version: "{{ libre_office_version|default('5.2.1.2') }}"
-    libre_office_url:  "http://download.documentfoundation.org/libreoffice/old/{{ libre_office_version|default('5.2.1.2') }}/rpm/x86_64/LibreOffice_{{ libre_office_version|default('5.2.1.2') }}_Linux_x86-64_rpm.tar.gz"
+    libre_office_url:  "https://downloadarchive.documentfoundation.org/libreoffice/old/{{ libre_office_version|default('5.2.1.2') }}/rpm/x86_64/LibreOffice_{{ libre_office_version|default('5.2.1.2') }}_Linux_x86-64_rpm.tar.gz"
 
-- name: Download libre-office
-  get_url:
-    url: "{{ libre_office_url }}"
-    dest: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}.tar.gz"
+- name: Download libreoffice
+  command: "wget {{ libre_office_url}} -O /tmp/lo_{{ libre_office_version }}.tar.gz"
 
 - name: Uncompress our installer
   unarchive:
-    src: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}.tar.gz"
+    src: "/tmp/lo_{{ libre_office_version }}.tar.gz"
     remote_src: true
-    dest: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}"
-
-- name: Get all of our libreoffice rpms
-  find:
-    paths: "/tmp/lo_{{ libre_office_version|default('5.2.1.2') }}/RPMS"
-    patterns: "*.rpm/"
-  register: rpm_result
+    dest: "/tmp/"
 
 - name: Install libreoffice
-  yum:
-    name: "{{ item.path }}"
-    state: present
-  with_items: "{{ rpm_result.files }}"
+  command: "yum localinstall -y /tmp/LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm/RPMS/*.rpm"
 
 - name: Cleanup
   file:
@@ -34,4 +23,4 @@
     path: "/tmp/{{ item }}"
   with_items:
     - "lo_{{ libre_office_version }}.tar.gz"
-    - "lo_{{ libre_office_version }}"
+    - "LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm"
