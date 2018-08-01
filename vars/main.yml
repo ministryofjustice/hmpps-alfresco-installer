@@ -24,7 +24,6 @@ packages:
   - vim
   - curl
   - wget
-  - swftools
   - ghostscript
 
 users:

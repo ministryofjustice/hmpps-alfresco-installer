@@ -7,7 +7,7 @@
     alfresco_content: /srv/content
     alfresco_cache: /srv/cache
     alfresco_data: /srv/alf_data
-    tomcat_shared: /usr/share/tomcat/shared/
+    tomcat_root: /usr/share/tomcat
 
 - name: Create required directories for alfresco
   file:
@@ -38,7 +38,7 @@
     dest: "/tmp/{{ item }}"
     mode: get
   with_items:
-    - alfresco-content-services-platform-distributionzip-5.2.3.zip
+    - alfresco-content-services-platform-distribution-5.2.3.zip
     - alfresco-content-services-share-distribution-5.2.3.zip
     - alfresco-ent-5.2-NOMS.lic
     - alfresco-s3-connector-2.1.0.amp
@@ -49,7 +49,7 @@
     dest: "/tmp"
     remote_src: true
   with_items:
-    - alfresco-content-services-platform-distributionzip-5.2.3.zip
+    - alfresco-content-services-platform-distribution-5.2.3.zip
     - alfresco-content-services-share-distribution-5.2.3.zip
 
 - name: Copy folders to the correct location
@@ -57,64 +57,47 @@
     src: "/tmp/{{ item.src }}"
     dest: "{{ item.dest }}"
     remote_src: true
+    overwrite: true
   with_items:
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/alf_data", dest: "/srv" }
-    - { src: "alfresco-content-services-share-distributionzip-5.2.3/alf_data", dest: "/srv" }
-    - { src: "alfresco-content-services-share-distributionzip-5.2.3/bin", dest: "/srv" }
-    - { src: "alfresco-content-services-share-distributionzip-5.2.3/bin", dest: "/srv" }
-
-- name: Copy our files to the correct locations
-  copy:
-    src: "/tmp/{{ item.src }}/{{ item.file }}"
-    dest: "{{ item.dest }}/{{ item.file }}"
-    remote_src: true
-  with_items:
-   - {
-        file: "postgresql-9.4.1212.jar",
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/lib",
-        dest: "{{ alfresco_libs }}"
-    }
-- name: Install our alfresco binary
-  raw: "JAVA_HOME=/usr/bin/java \
-             /tmp/alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin \
-            --optionfile /tmp/alfresco.properties \
-            --installer-language en"
+    - { src: "alfresco-content-services-platform-distribution-5.2.3/alf_data", dest: "/srv" }
+    - { src: "alfresco-content-services-share-distribution-5.2.3/alf_data", dest: "/srv" }
+    - { src: "alfresco-content-services-platform-distribution-5.2.3/bin", dest: "{{ tomcat_root }}" }
+    - { src: "alfresco-content-services-platform-distribution-5.2.3/bin", dest: "{{ tomcat_root }}" }
+    - { src: "alfresco-content-services-platform-distribution-5.2.3/web-server", dest: "{{ tomcat_root }}" }
+    - { src: "alfresco-content-services-share-distribution-5.2.3/web-server", dest: "{{ tomcat_root }}" }
 
 - name: Move our license to the correct directory
   copy:
     src: "/tmp/alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
-    dest: /alfresco/tomcat/shared/classes/alfresco/extension/license/
+    dest: "{{ alfresco_license }}"
     remote_src: true
 
-- name: Move our configfile to the correct directory
-  copy:
-    src: "/tmp/alfresco-global.properties"
-    dest: /alfresco/tomcat/shared/classes/alfresco-global.properties
-    remote_src: true
+- name: Install our plugins
+  command: "java -jar {{ tomcat_root }}/bin/alfresco-mmt.jar {{ item }} {{ tomcat_root }}/webapps/alfresco.war"
+  with_items:
+    - /tmp/alfresco-s3-connector-2.1.0.amp
+    - /tmp/alfresco-content-services-share-distribution-5.2.3/amps/alfresco-share-services.amp
 
-- name: Ensure that alfresco has stopped
-  service:
-    name: alfresco
-    state: stopped
+- name: Update our catalina.properties
+  lineinfile:
+    path: "{{ tomcat_root }}/conf/catalina.properties"
+    regexp: "^shared.loader="
+    line: "shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar"
+
+- name: Update our server xml file
+  replace:
+    path: "{{ tomcat_root }}/conf/server.xml"
+    regexp: '/^[\s]+<Connector port="8080" protocol="HTTP\/1.1"[\s]+connectionTimeout="20000"[\s]+redirectPort="8443"[\s]+\/>$/gm'
+    replace: '\1<Connector port="8080" protocol="HTTP/1.1" URIEncoding="UTF-8" connectionTimeout="20000" redirectPort="8443" maxHttpHeaderSize="32768"/> \2'
 
 - name: Clean up
   file:
     state: absent
     path: "/tmp/{{ item }}"
   with_items:
-    - "alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
-    - "alfresco-installer-{{ alfresco_version|default('5.2') }}-linux-x64.bin"
-    - "alfresco.properties"
-    - "alfresco-global.properties"
-
-- name: Modify the startupscript so we can run as a non priveleged user
-  lineinfile:
-    path: /etc/rc.d/init.d/alfresco
-    regexp: "/alfresco/alfresco.sh start \"$2\""
-    line: "su - alfresco -c \"/opt/Alfresco/alfresco.sh start $2\""
-
-- name: Modify the startupscript so we can stop as a non priveleged user
-  lineinfile:
-    path: /etc/rc.d/init.d/alfresco
-    regexp: "/alfresco/alfresco.sh stop \"$2\""
-    line: "su - alfresco -c \"/opt/Alfresco/alfresco.sh stop $2\""
+    - alfresco-content-services-platform-distribution-5.2.3.zip
+    - alfresco-content-services-share-distribution-5.2.3.zip
+    - alfresco-ent-5.2-NOMS.lic
+    - alfresco-content-services-platform-distribution-5.2.3
+    - alfresco-content-services-share-distribution-5.2.3
+    - alfresco-s3-connector-2.1.0.amp
