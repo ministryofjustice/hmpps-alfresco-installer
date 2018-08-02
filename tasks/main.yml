@@ -8,9 +8,6 @@
 - name: Install required packages
   include: packages.yml
 
-- name: Install gosu
-  include: gosu.yml
-
 - name: Create our application users
   include: users.yml
   with_items: "{{ users| default([]) }}"
@@ -22,3 +19,4 @@
 
 - name: Install alfresco
   include: alfresco.yml
+
