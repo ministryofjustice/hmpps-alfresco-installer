@@ -29,6 +29,7 @@
     - "{{ alfresco_licence }}"
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
+    - "{{ tomcat_web_ext }}"
 
 - name: Set permissions on cache and content and data dirs
   file:
