@@ -4,7 +4,6 @@
   set_fact:
     alfresco_libs: /usr/share/tomcat/shared/lib
     alfresco_licence: /usr/share/tomcat/shared/classes/alfresco/extension/license
-    alfresco_content: /srv/content
     alfresco_cache: /srv/cache
     alfresco_data: /srv/alf_data
     tomcat_root: /usr/share/tomcat
@@ -16,7 +15,6 @@
   with_items:
     - "{{ alfresco_libs }}"
     - "{{ alfresco_licence }}"
-    - "{{ alfresco_content }}"
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
 
@@ -27,7 +25,6 @@
     group: tomcat
     recurse: true
   with_items:
-    - "{{ alfresco_content }}"
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
 
@@ -114,7 +111,6 @@
     recurse: true
   with_items:
     - "{{ tomcat_root }}"
-    - "{{ alfresco_content }}"
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
 
