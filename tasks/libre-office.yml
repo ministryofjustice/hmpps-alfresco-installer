@@ -15,7 +15,7 @@
     dest: "/tmp/"
 
 - name: Install libreoffice
-  command: "yum localinstall -y /tmp/LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm/RPMS/*.rpm"
+  shell: "yum localinstall -y /tmp/LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm/RPMS/*.rpm"
 
 - name: Cleanup
   file:
@@ -24,3 +24,16 @@
   with_items:
     - "lo_{{ libre_office_version }}.tar.gz"
     - "LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm"
+
+- name: Find our soffice.bin file
+  find:
+    paths: /
+    recurse: yes
+    patterns: "soffice.bin"
+    file_type: "file"
+  register: soffice_result
+  failed_when: soffice_result.matched == 0
+
+- name: Set facts
+  set_fact:
+    libre_office_path: "{{ soffice_result.files[0].path }}"

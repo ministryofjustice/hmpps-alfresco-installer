@@ -1,5 +1,10 @@
 ---
 
+- name: Get our ghostscript version
+  command: "ghostscript --version"
+  register: gs_version
+  no_log: true
+
 - name: Set directory locations
   set_fact:
     alfresco_libs: /usr/share/tomcat/shared/lib
@@ -7,6 +12,13 @@
     alfresco_cache: /srv/cache
     alfresco_data: /srv/alf_data
     tomcat_root: /usr/share/tomcat
+    tomcat_web_ext: /usr/share/tomcat/shared/classes/alfresco/web-extension
+  no_log: true
+
+- name: Set template facts
+  set_fact:
+    multicast_group: 224.0.0.1
+    ghostscript_ver: "{{ gs_version.stdout }}"
 
 - name: Create required directories for alfresco
   file:
@@ -87,12 +99,19 @@
     dest: "{{ item.dest }}"
     remote_src: true
   with_items:
-    - { file: "server.xml", dest: "{{ tomcat_root}}/conf/server.xml" }
-    - { file: "alfresco-global.properties", dest: "{{ tomcat_root}}/shared/classes/alfresco-global.properties" }
+    - { file: "server.xml", dest: "{{ tomcat_root }}/conf/server.xml" }
     - { file: "limits.conf", dest: "/etc/security/limits.conf" }
     - { file: "rsyslog.conf", dest: "/etc/rsyslog.conf" }
     - { file: "alfresco_audit.conf", dest: "/etc/rsyslog.d/alfresco_audit.conf" }
     - { file: "alfresco_logrotate.conf", dest: "/etc/logrotate.d/alfresco_audit.conf" }
+
+- name: Create our templated config files
+  template:
+    src: "{{ role_path }}/templates/{{ item.file }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { file: "alfresco-global.properties", dest: "{{ tomcat_root }}/shared/classes/alfresco-global.properties" }
+    - { file: "custom-slingshot-application-context.xml.j2", dest: "{{ tomcat_web_ext }}/custom-slingshot-application-context.xml" }
 
 - name: Create our setenv.sh
   copy:
