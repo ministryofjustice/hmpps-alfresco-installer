@@ -1,11 +1,15 @@
 ---
 
-- name: Get oracle java jdk
-  shell: "wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.rpm\" \
-          -o /tmp/jdk.rpm"
+
+- name: Get oracle jdk
+  aws_s3:
+    bucket: "{{ artifact_bucket }}"
+    object: "/alfresco/jdk-8u181-linux-x64.rpm"
+    dest: "/tmp/jdk-8u181-linux-x64.rpm"
+    mode: get
 
 - name: Install oracle java
-  shell: "yum localinstall -y /tmp/jdk.rpm"
+  shell: "yum localinstall -y /tmp/jdk-8u181-linux-x64.rpm"
 
 - name: Install/upgrade the epel repo from remote
   yum:
@@ -22,3 +26,9 @@
     name: "{{ item }}"
     state: latest
   with_items: "{{ alfresco_vars.packages }}"
+
+- name: Clean up
+  file:
+    path: /tmp/jdk-8u181-linux-x64.rpm
+    state: absent
+
