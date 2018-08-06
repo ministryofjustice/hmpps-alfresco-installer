@@ -133,6 +133,7 @@
     - "{{ tomcat_root }}"
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
+    - /var/cache/tomcat
 
 - name: Clean up
   file:
