@@ -8,7 +8,7 @@
 - name: Download libreoffice
   aws_s3:
     bucket: "{{ artifact_bucket }}"
-    object: "/alfresco/LibreOffice"
+    object: "/alfresco/LibreOffice/{{ item }}"
     dest: "/tmp/lo_{{ libre_office_version }}.tar.gz"
     mode: get
   with_items:
