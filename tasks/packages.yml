@@ -1,5 +1,16 @@
 ---
 
+
+- name: Get oracle jdk
+  aws_s3:
+    bucket: "{{ artifact_bucket }}"
+    object: "/alfresco/jdk-8u181-linux-x64.rpm"
+    dest: "/tmp/jdk-8u181-linux-x64.rpm"
+    mode: get
+
+- name: Install oracle java
+  shell: "yum localinstall -y /tmp/jdk-8u181-linux-x64.rpm"
+
 - name: Install/upgrade the epel repo from remote
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -15,3 +26,9 @@
     name: "{{ item }}"
     state: latest
   with_items: "{{ alfresco_vars.packages }}"
+
+- name: Clean up
+  file:
+    path: /tmp/jdk-8u181-linux-x64.rpm
+    state: absent
+
