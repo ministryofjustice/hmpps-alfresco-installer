@@ -13,6 +13,7 @@
     alfresco_data: /srv/alf_data
     tomcat_root: /usr/share/tomcat
     tomcat_web_ext: /usr/share/tomcat/shared/classes/alfresco/web-extension
+    tomcat_service: /opt/tomcat/bin
   no_log: true
 
 - name: Set template facts
@@ -30,6 +31,7 @@
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
     - "{{ tomcat_web_ext }}"
+    - "{{ tomcat_service }}"
 
 - name: Set permissions on cache and content and data dirs
   file:
@@ -105,6 +107,9 @@
     - { file: "rsyslog.conf", dest: "/etc/rsyslog.conf" }
     - { file: "alfresco_audit.conf", dest: "/etc/rsyslog.d/alfresco_audit.conf" }
     - { file: "alfresco_logrotate.conf", dest: "/etc/logrotate.d/alfresco_audit.conf" }
+    - { file: "share-config-custom.xml", dest: "/usr/share/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml" }
+    - { file: "tomcat-run.sh", dest: "{{ tomcat_service }}/run.sh" }
+    - { file: "tomcat-alfresco.service", dest: "/etc/systemd/system/tomcat-alfresco.service" }
 
 - name: Create our templated config files
   template:
@@ -134,6 +139,7 @@
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
     - /var/cache/tomcat
+    - /opt/tomcat
 
 - name: Clean up
   file:
@@ -146,3 +152,23 @@
     - alfresco-content-services-platform-distributionzip-5.2.3
     - alfresco-content-services-share-distribution-5.2.3
     - alfresco-s3-connector-2.1.0.amp
+
+- name: Ensure our service is stopped and disabled
+  service:
+    name: tomcat
+    state: stopped
+    enabled: false
+  become: true
+
+- name: Set our permissions on the run file
+  file:
+    path: "{{ tomcat_service }}/run.sh"
+    owner: tomcat
+    group: tomcat
+    mode: u=rwx
+
+- name: Install our custom service
+  service:
+    name: tomcat-alfresco
+    state: stopped
+    enabled: true
