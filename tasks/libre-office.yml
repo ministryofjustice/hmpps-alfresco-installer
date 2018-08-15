@@ -6,13 +6,7 @@
     libre_office_url:  "https://downloadarchive.documentfoundation.org/libreoffice/old/{{ libre_office_version|default('5.2.1.2') }}/rpm/x86_64/LibreOffice_{{ libre_office_version|default('5.2.1.2') }}_Linux_x86-64_rpm.tar.gz"
 
 - name: Download libreoffice
-  aws_s3:
-    bucket: "{{ artifact_bucket }}"
-    object: "/alfresco/LibreOffice/{{ item }}"
-    dest: "/tmp/lo_{{ libre_office_version }}.tar.gz"
-    mode: get
-  with_items:
-    - LibreOfficeLibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm.tar.gz
+  command: "wget {{ libre_office_url}} -O /tmp/lo_{{ libre_office_version }}.tar.gz"
 
 - name: Uncompress our installer
   unarchive:
