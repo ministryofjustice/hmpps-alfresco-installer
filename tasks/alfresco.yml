@@ -90,7 +90,7 @@
 
 - name: Move our license to the correct directory
   copy:
-    src: "/tmp/alfresco-ent-{{ alfrehttps://www.drumshop.co.uk/products/jingle-mute-tambourinesco_version|default('5.2') }}-NOMS.lic"
+    src: "/tmp/alfresco-ent-{{ alfresco_version|default('5.2') }}-NOMS.lic"
     dest: "{{ alfresco_licence }}"
     remote_src: true
 
