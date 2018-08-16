@@ -9,7 +9,9 @@
     mode: get
 
 - name: Install oracle java
-  shell: "yum localinstall -y /tmp/jdk-8u181-linux-x64.rpm"
+  yum:
+    name: /tmp/jdk-8u181-linux-x64.rpm
+    state: present
 
 - name: Install/upgrade the epel repo from remote
   yum:
