@@ -10,7 +10,8 @@ packages:
   - cups-devel
   - cups-libs
   - fontconfig
-  - tomcat-native
+    #- tomcat-native
+  - tomcat
   - libICE
   - libSM
   - libXext
