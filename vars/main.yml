@@ -5,9 +5,12 @@ packages:
   - deltarpm 
   - dpkg
   - cairo
+  - cairo-devel
+  - cups
+  - cups-devel
   - cups-libs
   - fontconfig
-  - tomcat
+  - tomcat-native
   - libICE
   - libSM
   - libXext
