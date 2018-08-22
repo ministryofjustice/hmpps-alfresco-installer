@@ -62,8 +62,9 @@
     dest: "/tmp/{{ item }}"
     mode: get
   with_items:
-    - alfresco-2.11.2-NOSPEC.noarch.rpm
-    - share-2.11.2-NOSPEC.noarch.rpm
+    - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
+    - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
+  when: not skip_customisation|default(false)
 
 - name: Uncompress our installers
   unarchive:
@@ -175,8 +176,9 @@
     name: "/tmp/{{ item }}"
     state: present
   with_items:
-    - alfresco-2.11.2-NOSPEC.noarch.rpm
-    - share-2.11.2-NOSPEC.noarch.rpm
+    - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
+    - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
+  when: not skip_customisation|default(false)
 
 - name: Clean up
   file:
@@ -191,6 +193,7 @@
     - alfresco-s3-connector-2.1.0.amp
     - alfresco-2.11.2-NOSPEC.noarch.rpm
     - share-2.11.2-NOSPEC.noarch.rpm
+  ignore_errors: true
 
 - name: Set our permissions on the run file
   file:
