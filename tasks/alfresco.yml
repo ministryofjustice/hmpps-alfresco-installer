@@ -1,5 +1,11 @@
 ---
 
+- block:
+    - name: Define our version number if the env var is set
+      set_fact:
+        version_number: "{{ ansible_env.VERSION_NUMBER }}"
+  when: ansible_env.VERSION_NUMBER|default(false)
+
 - name: Get our ghostscript version
   command: "ghostscript --version"
   register: gs_version
