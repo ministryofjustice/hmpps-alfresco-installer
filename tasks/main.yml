@@ -5,9 +5,6 @@
     file: main.yml
     name: alfresco_vars
 
-- name: Install required packages
-  include: packages.yml
-
 - name: Create our application users
   include: users.yml
   with_items: "{{ users| default([]) }}"
