@@ -207,9 +207,3 @@
     owner: tomcat
     group: tomcat
     mode: u=rwx
-
-- name: Install our custom service
-  service:
-    name: tomcat-alfresco
-    state: stopped
-    enabled: true
