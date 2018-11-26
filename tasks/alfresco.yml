@@ -219,8 +219,8 @@
     - alfresco-content-services-platform-distributionzip-5.2.3
     - alfresco-content-services-share-distribution-5.2.3
     - alfresco-s3-connector-2.1.0.amp
-    - alfresco-2.11.2-NOSPEC.noarch.rpm
-    - share-2.11.2-NOSPEC.noarch.rpm
+    - "alfresco-{{ version_number|default('2.11.2') }}-NOSPEC.noarch.rpm"
+    - "share-{{ version_number|default('2.11.2') }}-NOSPEC.noarch.rpm"
   ignore_errors: true
 
 - name: Set our permissions on the run file
