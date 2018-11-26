@@ -102,10 +102,24 @@
     remote_src: true
 
 - name: Install our plugins
-  command: "java -jar {{ tomcat_root }}/bin/alfresco-mmt.jar install {{ item }} {{ tomcat_root }}/webapps/alfresco.war -force"
+  command: "java -jar
+            {{ tomcat_root }}/bin/alfresco-mmt.jar
+            install
+            {{ item }}
+            {{ tomcat_root }}/webapps/alfresco.war
+            -force
+            -verbose"
   with_items:
     - /tmp/alfresco-s3-connector-2.1.0.amp
     - /tmp/alfresco-content-services-share-distribution-5.2.3/amps/alfresco-share-services.amp
+  become: true
+
+- name: List our installed plugins
+  command: "java -jar /
+            {{ tomcat_root }}/bin/alfresco-mmt.jar
+            list
+            {{ tomcat_root }}/webapps/alfresco.war"
+  register: plugins_stdout
 
 - name: Uncompress the pdf-renderer
   unarchive:
