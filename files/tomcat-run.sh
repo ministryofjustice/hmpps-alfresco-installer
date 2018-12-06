@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-/usr/bin/java -classpath /usr/share/tomcat/bin/bootstrap.jar:/usr/share/tomcat/bin/tomcat-juli.jar:/usr/share/java/commons-daemon.jar \
+JAVA_OPTS="${JAVA_OPTS} -Xms1G -Xmx1G"
+
+source /etc/sysconfig/tomcat
+
+/usr/bin/java ${JAVA_OPTS} -classpath /usr/share/tomcat/bin/bootstrap.jar:/usr/share/tomcat/bin/tomcat-juli.jar:/usr/share/java/commons-daemon.jar \
   -Dcatalina.base=/usr/share/tomcat \
   -Dcatalina.home=/usr/share/tomcat \
   -Djava.endorsed.dirs= -Djava.io.tmpdir=/var/cache/tomcat/temp \
