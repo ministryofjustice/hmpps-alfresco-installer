@@ -222,11 +222,11 @@
     mode: 775
 
 - name: add our classpath to /etc/environment
-   lineinfile:
+  lineinfile:
     dest: /etc/environment
-     state: present
-     regexp: 'CLASSPATH='
-     line: "CLASSPATH=/usr/java/classpath"
+    state: present
+    regexp: 'CLASSPATH='
+    line: "CLASSPATH=/usr/java/classpath"
 
 - name: Clean up
   file:
