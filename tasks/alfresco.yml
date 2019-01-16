@@ -17,6 +17,8 @@
     alfresco_licence: /usr/share/tomcat/shared/classes/alfresco/extension/license
     alfresco_cache: /srv/cache
     alfresco_data: /srv/alf_data
+    alfresco_content: /srv/alf_data/contentstore
+    alfresco_del_content: /srv/alf_data/contentstore.deleted
     tomcat_root: /usr/share/tomcat
     tomcat_web_ext: /usr/share/tomcat/shared/classes/alfresco/web-extension
     tomcat_service: /opt/tomcat/bin
@@ -132,8 +134,7 @@
     - { file: "alfresco_audit.conf", dest: "/etc/rsyslog.d/alfresco_audit.conf" }
     - { file: "alfresco_logrotate.conf", dest: "/etc/logrotate.d/alfresco_audit.conf" }
     - { file: "share-config-custom.xml", dest: "/usr/share/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml" }
-    - { file: "tomcat-run.sh", dest: "{{ tomcat_service }}/run.sh" }
-    - { file: "tomcat-alfresco.service", dest: "/etc/systemd/system/tomcat-alfresco.service" }
+
 
 - name: Create our templated config files
   template:
@@ -165,11 +166,10 @@
     - /var/cache/tomcat
     - /opt/tomcat
 
-- name: Ensure our service is stopped and disabled
+- name: Ensure our service is stopped
   service:
     name: tomcat
     state: stopped
-    enabled: false
   become: true
 
 - name: Install our customisations
@@ -243,6 +243,17 @@
     - "share-{{ version_number|default('2.11.2') }}-NOSPEC.noarch.rpm"
     - hazelcast-aws-2.3.jar
   ignore_errors: true
+
+- name: Download our shared session jar files
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ tomcat_root }}/lib/{{ item|basename }}"
+    owner: tomcat
+    group: tomcat
+  with_items:
+    - https://repo1.maven.org/maven2/de/javakaffee/msm/memcached-session-manager/2.3.2/memcached-session-manager-2.3.2.jar
+    - https://repo1.maven.org/maven2/de/javakaffee/msm/memcached-session-manager-tc7/2.3.2/memcached-session-manager-tc7-2.3.2.jar
+    - https://repo1.maven.org/maven2/net/spy/spymemcached/2.12.3/spymemcached-2.12.3.jar
 
 - name: Set our permissions on the run file
   file:
