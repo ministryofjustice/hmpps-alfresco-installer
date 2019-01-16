@@ -134,8 +134,7 @@
     - { file: "alfresco_audit.conf", dest: "/etc/rsyslog.d/alfresco_audit.conf" }
     - { file: "alfresco_logrotate.conf", dest: "/etc/logrotate.d/alfresco_audit.conf" }
     - { file: "share-config-custom.xml", dest: "/usr/share/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml" }
-    - { file: "tomcat-run.sh", dest: "{{ tomcat_service }}/run.sh" }
-    - { file: "tomcat-alfresco.service", dest: "/etc/systemd/system/tomcat-alfresco.service" }
+
 
 - name: Create our templated config files
   template:
@@ -167,11 +166,10 @@
     - /var/cache/tomcat
     - /opt/tomcat
 
-- name: Ensure our service is stopped and disabled
+- name: Ensure our service is stopped
   service:
     name: tomcat
     state: stopped
-    enabled: false
   become: true
 
 - name: Install our customisations
