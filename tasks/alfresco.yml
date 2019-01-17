@@ -22,6 +22,7 @@
     tomcat_root: /usr/share/tomcat
     tomcat_web_ext: /usr/share/tomcat/shared/classes/alfresco/web-extension
     tomcat_service: /opt/tomcat/bin
+    alfresco_log_dir: /var/log/alfresco
   no_log: true
 
 - name: Set template facts
@@ -40,6 +41,7 @@
     - "{{ alfresco_data }}"
     - "{{ tomcat_web_ext }}"
     - "{{ tomcat_service }}"
+    - "{{ alfresco_log_dir }}"
 
 - name: Set permissions on cache and content and data dirs
   file:
@@ -50,6 +52,7 @@
   with_items:
     - "{{ alfresco_cache }}"
     - "{{ alfresco_data }}"
+    - "{{ alfresco_log_dir }}"
 
 - name: Get our alfresco zips, amps and license
   aws_s3:
