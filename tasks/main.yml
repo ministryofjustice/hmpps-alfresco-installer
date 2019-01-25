@@ -17,3 +17,5 @@
 - name: Install alfresco
   include: alfresco.yml
 
+- name: Install nginx
+  include: nginx.yml

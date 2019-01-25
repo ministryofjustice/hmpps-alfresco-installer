@@ -115,9 +115,13 @@
 
 - name: Move our pdf renderer to somewhere sane
   command: "mv /tmp/alfresco-pdf-renderer /usr/sbin/."
+  args:
+    warn: false
 
 - name: Make our renderer executable
   command: "chmod +x /usr/sbin/alfresco-pdf-renderer"
+  args:
+    warn: false
 
 - name: Update our catalina.properties
   lineinfile:

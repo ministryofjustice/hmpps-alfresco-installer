@@ -22,6 +22,8 @@
 
 - name: Install libreoffice
   shell: "yum localinstall -y /tmp/LibreOffice_{{ libre_office_version }}_Linux_x86-64_rpm/RPMS/*.rpm"
+  args:
+    warn: false
 
 - name: Cleanup
   file:
