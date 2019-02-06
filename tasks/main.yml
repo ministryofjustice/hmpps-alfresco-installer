@@ -1,5 +1,31 @@
 ---
 
+- name: Import the elrepo repository
+  command: rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+  become: true
+  args:
+    warn: false
+  ignore_errors: true
+
+- name: Install our new kernel
+  yum:
+    name: kernel-ml
+    state: present
+    enablerepo: elrepo-kernel
+  become: true
+
+- name: Set our new kernel as default
+  command: grub2-set-default 0
+  become: true
+
+- name: Regenerate grub
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  become: true
+
+- name: Clean up old kernels
+  command: package-cleanup --oldkernels
+  become: true
+
 - name: Load in our vars
   include_vars:
     file: main.yml
