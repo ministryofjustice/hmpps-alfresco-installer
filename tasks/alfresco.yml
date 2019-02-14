@@ -72,6 +72,7 @@
     object: "/alfresco/{{ item }}"
     dest: "/tmp/{{ item }}"
     mode: get
+    retries: 3
   with_items:
     - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
     - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm.md5"
