@@ -79,6 +79,9 @@
     - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm.md5"
   when: not skip_customisation|default(false)
 
+- name: Check our files exist
+  command: "ls -lah /tmp/"
+
 - name: Compare our artifacts with their md5sums
   command: "md5sum -c /tmp/{{ item }}-NOSPEC.noarch.rpm.md5"
   args:
