@@ -73,28 +73,35 @@
     dest: "/usr/share/tomcat/webapps/_vti_bin.war"
     remote_src: true
 
-- name: Get our build artifacts
+- name: Get list of alfresco build artifacts
   aws_s3:
+    mode: list
     bucket: "{{ alfresco_artifact_bucket }}"
-    object: "/alfresco/{{ item }}"
-    dest: "/tmp/{{ item }}"
-    mode: get
-    retries: 3
-  with_items:
-    - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
-    - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm.md5"
-    - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
-    - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm.md5"
-  when: not skip_customisation|default(false)
+    prefix: "{{ alfresco_build_path }}/alfresco/"
+  register: s3_bucket_alfresco_items
 
-- name: Compare our artifacts with their md5sums
-  command: "md5sum -c {{ item }}-NOSPEC.noarch.rpm.md5"
-  args:
-    warn: false
-    chdir: /tmp
-  with_items:
-    - "alfresco-{{ version_number | default('2.11.2') }}"
-    - "share-{{ version_number | default('2.11.2') }}"
+- name: Download alfresco build artifacts
+  aws_s3:
+    mode: get
+    bucket: "{{ alfresco_artifact_bucket }}"
+    object: "{{ item }}"
+    dest: "/tmp/{{ item|basename }}"
+  with_items: "{{ s3_bucket_alfresco_items.s3_keys }}"
+
+- name: Get list of share build artifacts
+  aws_s3:
+    mode: list
+    bucket: "{{ alfresco_artifact_bucket }}"
+    prefix: "{{ alfresco_build_path }}/share/"
+  register: s3_bucket_share_items
+
+- name: Download share build artifacts
+  aws_s3:
+    mode: get
+    bucket: "{{ alfresco_artifact_bucket }}"
+    object: "{{ item }}"
+    dest: "/tmp/{{ item|basename }}"
+  with_items: "{{ s3_bucket_share_items.s3_keys }}"
 
 - name: Uncompress our installers
   unarchive:
@@ -197,13 +204,23 @@
     state: stopped
   become: true
 
-- name: Install our customisations
+- name: Display paths of all rpm files in dir
+  debug: msg={{ lookup('fileglob', '/tmp/*.rpm') }}
+
+- name: Install our alfresco customisations
   yum:
-    name: "/tmp/{{ item }}"
+    name: "{{ item }}"
     state: present
-  with_items:
-    - "alfresco-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
-    - "share-{{ version_number | default('2.11.2') }}-NOSPEC.noarch.rpm"
+  with_fileglob:
+    - "/tmp/alfresco*.rpm"
+  when: not skip_customisation|default(false)
+
+- name: Install our share customisations
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_fileglob:
+    - "/tmp/share*.rpm"
   when: not skip_customisation|default(false)
 
 - name: Install our plugins
@@ -245,9 +262,15 @@
     - alfresco-content-services-platform-distributionzip-5.2.3
     - alfresco-content-services-share-distribution-5.2.3
     - alfresco-s3-connector-2.1.0.amp
-    - "alfresco-{{ version_number|default('2.11.2') }}-NOSPEC.noarch.rpm"
-    - "share-{{ version_number|default('2.11.2') }}-NOSPEC.noarch.rpm"
     - _vti_bin.war
+  ignore_errors: true
+
+- name: Remove rpms
+  file:
+    state: absent
+    path: "/tmp/{{ item }}"
+  with_fileglob:
+    - "/tmp/*.rpm"
   ignore_errors: true
 
 - name: Download our shared session jar files
