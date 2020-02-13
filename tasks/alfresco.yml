@@ -23,6 +23,7 @@
     tomcat_web_ext: /usr/share/tomcat/shared/classes/alfresco/web-extension
     tomcat_service: /opt/tomcat/bin
     alfresco_log_dir: /var/log/alfresco
+    solr_root: /opt/solr
   no_log: true
 
 - name: Set template facts

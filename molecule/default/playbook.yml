@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  roles:
+    - packages
+    - alfresco
+  vars_files:
+    - ../vars/aws.yml
