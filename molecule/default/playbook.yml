@@ -4,6 +4,6 @@
   become: true
   roles:
     - packages
-    - alfresco
+    - hmpps-alfresco-installer
   vars_files:
     - ../vars/aws.yml

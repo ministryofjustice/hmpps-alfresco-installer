@@ -1,6 +1,3 @@
 ---
 - name: packages
   src: https://github.com/ministryofjustice/hmpps-ansible-packages.git
-- name: alfresco
-  src: https://github.com/ministryofjustice/hmpps-alfresco-installer.git
-  version: issue_31_build_from_alfresco_pipeline
