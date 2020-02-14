@@ -1,2 +1,15 @@
 ---
 # libre_office_path: /opt/libreoffice5.2
+
+solr_zip_file: alfresco-search-services.zip
+solr_root: /opt/solr
+solr_home: "{{ solr_root }}/data"
+solr_logs: "{{ solr_root }}/logs"
+solr_gid: 1200
+solr_user: solr
+solr_group: solr
+solr_packages:
+    - lsof
+
+libre_url: https://downloadarchive.documentfoundation.org/libreoffice/old
+libre_office_version: 5.2.1.2

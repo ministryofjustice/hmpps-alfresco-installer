@@ -33,4 +33,3 @@
   file:
     path: /tmp/jdk-8u181-linux-x64.rpm
     state: absent
-
