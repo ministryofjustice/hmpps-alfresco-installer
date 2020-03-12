@@ -1,0 +1,2 @@
+molecule[ec2]
+boto3

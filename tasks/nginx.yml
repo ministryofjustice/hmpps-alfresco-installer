@@ -16,4 +16,3 @@
     name: nginx
     state: stopped
     enabled: true
-

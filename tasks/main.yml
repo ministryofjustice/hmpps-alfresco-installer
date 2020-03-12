@@ -19,3 +19,6 @@
 
 - name: Install nginx
   include: nginx.yml
+
+- name: Install solr
+  include: solr.yml
