@@ -87,7 +87,9 @@
     bucket: "{{ alfresco_artifact_bucket }}"
     object: "{{ item }}"
     dest: "/tmp/{{ item|basename }}"
-  with_items: "{{ s3_bucket_alfresco_items.s3_keys }}"
+  with_items:
+    - "{{ s3_bucket_alfresco_items.s3_keys[1] }}"
+    - "{{ s3_bucket_alfresco_items.s3_keys[2] }}"
 
 - name: Get list of share build artifacts
   aws_s3:
@@ -102,7 +104,9 @@
     bucket: "{{ alfresco_artifact_bucket }}"
     object: "{{ item }}"
     dest: "/tmp/{{ item|basename }}"
-  with_items: "{{ s3_bucket_share_items.s3_keys }}"
+  with_items:
+    - "{{ s3_bucket_share_items.s3_keys[1] }}"
+    - "{{ s3_bucket_share_items.s3_keys[2] }}"
 
 - name: Uncompress our installers
   unarchive:
