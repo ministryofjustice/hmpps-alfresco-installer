@@ -1,0 +1,30 @@
+---
+- name: Get tomcat patch
+  aws_s3:
+    bucket: "{{ artifact_bucket }}"
+    object: "/alfresco/tomcat/tomcat-patch.tar"
+    dest: "/tmp/tomcat-patch.tar"
+    mode: get
+
+- name: Extract tomcat-patch
+  unarchive:
+    src: "/tmp/tomcat-patch.tar"
+    dest: /
+    remote_src: yes
+
+- name: Ensure tomcat patch folder have correct owners
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+    recurse: true
+  become: true
+  with_items:
+    - /usr/share/tomcat/bin
+    - /usr/share/tomcat/lib
+
+- name: Clean up tomcat-patch
+  file:
+    path: "/tmp/tomcat-patch.tar"
+    state: absent

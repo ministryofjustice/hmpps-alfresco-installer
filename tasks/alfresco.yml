@@ -1,5 +1,4 @@
 ---
-
 - block:
     - name: Define our version number if the env var is set
       set_fact:
@@ -120,16 +119,46 @@
 - name: Copy folders to the correct location
   shell: "cp -ru /tmp/{{ item.src }} {{ item.dest }}"
   with_items:
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/alf_data", dest: "/srv" }
-    - { src: "alfresco-content-services-share-distribution-5.2.3/alf_data", dest: "/srv" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*", dest: "{{ tomcat_root }}/bin" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*", dest: "{{ tomcat_root }}/bin" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/conf/*", dest: "{{ tomcat_root }}/conf" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/lib/*", dest: "{{ tomcat_root }}/lib" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/shared/*", dest: "{{ tomcat_root }}/shared" }
-    - { src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/webapps/*", dest: "{{ tomcat_root }}/webapps" }
-    - { src: "alfresco-content-services-share-distribution-5.2.3/web-server/conf/*", dest: "{{ tomcat_root }}/conf" }
-    - { src: "alfresco-content-services-share-distribution-5.2.3/web-server/webapps/*", dest: "{{ tomcat_root }}/webapps" }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/alf_data",
+        dest: "/srv",
+      }
+    - {
+        src: "alfresco-content-services-share-distribution-5.2.3/alf_data",
+        dest: "/srv",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*",
+        dest: "{{ tomcat_root }}/bin",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*",
+        dest: "{{ tomcat_root }}/bin",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/conf/*",
+        dest: "{{ tomcat_root }}/conf",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/lib/*",
+        dest: "{{ tomcat_root }}/lib",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/shared/*",
+        dest: "{{ tomcat_root }}/shared",
+      }
+    - {
+        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/webapps/*",
+        dest: "{{ tomcat_root }}/webapps",
+      }
+    - {
+        src: "alfresco-content-services-share-distribution-5.2.3/web-server/conf/*",
+        dest: "{{ tomcat_root }}/conf",
+      }
+    - {
+        src: "alfresco-content-services-share-distribution-5.2.3/web-server/webapps/*",
+        dest: "{{ tomcat_root }}/webapps",
+      }
 
 - name: Move our license to the correct directory
   copy:
@@ -168,18 +197,32 @@
     - { file: "server.xml", dest: "{{ tomcat_root }}/conf/server.xml" }
     - { file: "limits.conf", dest: "/etc/security/limits.conf" }
     - { file: "rsyslog.conf", dest: "/etc/rsyslog.conf" }
-    - { file: "alfresco_audit.conf", dest: "/etc/rsyslog.d/alfresco_audit.conf" }
-    - { file: "alfresco_logrotate.conf", dest: "/etc/logrotate.d/alfresco_audit.conf" }
-    - { file: "share-config-custom.xml", dest: "/usr/share/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml" }
-
+    - {
+        file: "alfresco_audit.conf",
+        dest: "/etc/rsyslog.d/alfresco_audit.conf",
+      }
+    - {
+        file: "alfresco_logrotate.conf",
+        dest: "/etc/logrotate.d/alfresco_audit.conf",
+      }
+    - {
+        file: "share-config-custom.xml",
+        dest: "/usr/share/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml",
+      }
 
 - name: Create our templated config files
   template:
     src: "{{ role_path }}/templates/{{ item.file }}"
     dest: "{{ item.dest }}"
   with_items:
-    - { file: "alfresco-global.properties", dest: "{{ tomcat_root }}/shared/classes/alfresco-global.properties" }
-    - { file: "custom-slingshot-application-context.xml.j2", dest: "{{ tomcat_web_ext }}/custom-slingshot-application-context.xml" }
+    - {
+        file: "alfresco-global.properties",
+        dest: "{{ tomcat_root }}/shared/classes/alfresco-global.properties",
+      }
+    - {
+        file: "custom-slingshot-application-context.xml.j2",
+        dest: "{{ tomcat_web_ext }}/custom-slingshot-application-context.xml",
+      }
 
 - name: Create our setenv.sh
   copy:
@@ -209,6 +252,9 @@
     state: stopped
   become: true
 
+- name: Patch tomcat version
+  include: tomcat.yml
+
 - name: Display paths of all rpm files in dir
   debug: msg={{ lookup('fileglob', '/tmp/*.rpm') }}
 
@@ -230,12 +276,12 @@
 
 - name: Install our plugins
   command: "java -jar
-            {{ tomcat_root }}/bin/alfresco-mmt.jar
-            install
-            {{ item }}
-            {{ tomcat_root }}/webapps/alfresco.war
-            -force
-            -verbose"
+    {{ tomcat_root }}/bin/alfresco-mmt.jar
+    install
+    {{ item }}
+    {{ tomcat_root }}/webapps/alfresco.war
+    -force
+    -verbose"
   with_items:
     - /tmp/alfresco-s3-connector-2.1.0.2.amp
     - /tmp/alfresco-content-services-share-distribution-5.2.3/amps/alfresco-share-services.amp
@@ -243,9 +289,9 @@
 
 - name: List our installed plugins
   command: "java -jar
-            {{ tomcat_root }}/bin/alfresco-mmt.jar
-            list
-            {{ tomcat_root }}/webapps/alfresco.war"
+    {{ tomcat_root }}/bin/alfresco-mmt.jar
+    list
+    {{ tomcat_root }}/webapps/alfresco.war"
   register: plugins_stdout
 
 - name: Check our plugins are actually installed
