@@ -1,6 +1,4 @@
 ---
-
-
 - name: Get oracle jdk
   aws_s3:
     bucket: "{{ artifact_bucket }}"
@@ -20,7 +18,7 @@
 
 - name: Update our system
   yum:
-    name: '*'
+    name: "*"
     state: latest
 
 - name: Install required packages
@@ -33,3 +31,5 @@
   file:
     path: /tmp/jdk-8u181-linux-x64.rpm
     state: absent
+
+

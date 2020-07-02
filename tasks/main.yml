@@ -1,5 +1,4 @@
 ---
-
 - name: Load in our vars
   include_vars:
     file: main.yml
