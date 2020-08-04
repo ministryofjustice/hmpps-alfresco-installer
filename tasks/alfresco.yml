@@ -61,8 +61,8 @@
     dest: "/tmp/{{ item }}"
     mode: get
   with_items:
-    - alfresco-content-services-platform-distributionzip-5.2.3.zip
-    - alfresco-content-services-share-distribution-5.2.3.zip
+    - alfresco-content-services-platform-distributionzip-5.2.6.zip
+    - alfresco-content-services-share-distribution-5.2.6.zip
     - alfresco-ent-5.2-NOMS.lic
     - alfresco-s3-connector-2.1.0.2.amp
     - _vti_bin.war
@@ -113,50 +113,50 @@
     dest: "/tmp"
     remote_src: true
   with_items:
-    - alfresco-content-services-platform-distributionzip-5.2.3.zip
-    - alfresco-content-services-share-distribution-5.2.3.zip
+    - alfresco-content-services-platform-distributionzip-5.2.6.zip
+    - alfresco-content-services-share-distribution-5.2.6.zip
 
 - name: Copy folders to the correct location
   shell: "cp -ru /tmp/{{ item.src }} {{ item.dest }}"
   with_items:
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/alf_data",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/alf_data",
         dest: "/srv",
       }
     - {
-        src: "alfresco-content-services-share-distribution-5.2.3/alf_data",
+        src: "alfresco-content-services-share-distribution-5.2.6/alf_data",
         dest: "/srv",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/bin/*",
         dest: "{{ tomcat_root }}/bin",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/bin/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/bin/*",
         dest: "{{ tomcat_root }}/bin",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/conf/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/web-server/conf/*",
         dest: "{{ tomcat_root }}/conf",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/lib/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/web-server/lib/*",
         dest: "{{ tomcat_root }}/lib",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/shared/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/web-server/shared/*",
         dest: "{{ tomcat_root }}/shared",
       }
     - {
-        src: "alfresco-content-services-platform-distributionzip-5.2.3/web-server/webapps/*",
+        src: "alfresco-content-services-platform-distributionzip-5.2.6/web-server/webapps/*",
         dest: "{{ tomcat_root }}/webapps",
       }
     - {
-        src: "alfresco-content-services-share-distribution-5.2.3/web-server/conf/*",
+        src: "alfresco-content-services-share-distribution-5.2.6/web-server/conf/*",
         dest: "{{ tomcat_root }}/conf",
       }
     - {
-        src: "alfresco-content-services-share-distribution-5.2.3/web-server/webapps/*",
+        src: "alfresco-content-services-share-distribution-5.2.6/web-server/webapps/*",
         dest: "{{ tomcat_root }}/webapps",
       }
 
@@ -168,7 +168,7 @@
 
 - name: Uncompress the pdf-renderer
   unarchive:
-    src: "/tmp/alfresco-content-services-platform-distributionzip-5.2.3/alfresco-pdf-renderer/alfresco-pdf-renderer-1.0-linux.tgz"
+    src: "/tmp/alfresco-content-services-platform-distributionzip-5.2.6/alfresco-pdf-renderer/alfresco-pdf-renderer-1.1-linux.tgz"
     dest: "/tmp"
     remote_src: true
 
@@ -284,7 +284,7 @@
     -verbose"
   with_items:
     - /tmp/alfresco-s3-connector-2.1.0.2.amp
-    - /tmp/alfresco-content-services-share-distribution-5.2.3/amps/alfresco-share-services.amp
+    - /tmp/alfresco-content-services-share-distribution-5.2.6/amps/alfresco-share-services.amp
   become: true
 
 - name: List our installed plugins
@@ -307,11 +307,11 @@
     state: absent
     path: "/tmp/{{ item }}"
   with_items:
-    - alfresco-content-services-platform-distributionzip-5.2.3.zip
-    - alfresco-content-services-share-distribution-5.2.3.zip
+    - alfresco-content-services-platform-distributionzip-5.2.6.zip
+    - alfresco-content-services-share-distribution-5.2.6.zip
     - alfresco-ent-5.2-NOMS.lic
-    - alfresco-content-services-platform-distributionzip-5.2.3
-    - alfresco-content-services-share-distribution-5.2.3
+    - alfresco-content-services-platform-distributionzip-5.2.6
+    - alfresco-content-services-share-distribution-5.2.6
     - alfresco-s3-connector-2.1.0.2.amp
     - _vti_bin.war
   ignore_errors: true
