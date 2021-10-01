@@ -309,7 +309,7 @@
   with_items:
     - alfresco-content-services-platform-distributionzip-5.2.6.zip
     - alfresco-content-services-share-distribution-5.2.6.zip
-    - alfresco-ent-5.2-NOMS.lic
+    - alfresco-ent-5.3-NOMS.lic
     - alfresco-content-services-platform-distributionzip-5.2.6
     - alfresco-content-services-share-distribution-5.2.6
     - alfresco-s3-connector-2.1.0.2.amp
